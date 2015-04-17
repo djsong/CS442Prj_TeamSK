@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.io.ObjectOutputStream"/>
+<fullyQualifiedTypeName name="java.io.DataOutputStream"/>
+<fullyQualifiedTypeName name="java.io.OutputStream"/>
+<fullyQualifiedTypeName name="java.io.DataInputStream"/>
+<fullyQualifiedTypeName name="org.w3c.dom.css.Rect"/>
+<fullyQualifiedTypeName name="SingleRestroomFacilityData"/>
+<fullyQualifiedTypeName name="SingleParkingLotFacilityData"/>
+<fullyQualifiedTypeName name="SingleFacilityDataBase"/>
+<fullyQualifiedTypeName name="CommPacketDef"/>
+<fullyQualifiedTypeName name="TransmitFacilityCreateData"/>
+<fullyQualifiedTypeName name="CommPacketDef_Cli_FacInit"/>
+</qualifiedTypeNameHistroy>

@@ -1,0 +1,59 @@
+/**
+ * [CS442] Mobile Computing, Spring 2015
+ *
+ * Server main entry point, etc..
+ *
+ * @author: DJ Song
+ * */
+
+public class ServerMain 
+{
+	
+	/** Just as an example.. */
+	public final static int EXAMPLE_RESTROOM_FLOORNUM = 1;
+	public final static int EXAMPLE_MALE_RESTROOM_ROOMNUM = 105;
+	public final static int EXAMPLE_FEMALE_RESTROOM_ROOMNUM = 108;
+	
+	public static void main(String[] args) 
+	{
+
+		try {
+			
+			// Load server data before any communication thread gets on. 
+			LoadFacilityData();
+			
+			ClientConnThread ClientConnThreadObj = new ClientConnThread();
+			ClientConnThreadObj.start();
+			
+			// Looks like the process won't be terminated until created threads are done..?
+			
+			
+			// Do some communication to the sensors too..
+			
+			// Temporary example for now..
+			SensorCommThread SensorCommThreadObj = new SensorCommThread();
+			SensorCommThreadObj.start();
+			
+		} catch (Exception e) {
+			System.err.println("Exception occurred in main");
+		}
+
+	}
+	
+	/** 
+	 * This is suppose to load up all the facility information that the sensor is installed
+	 * We just load up some dummy for this semester though.
+	 * */
+	static void LoadFacilityData()
+	{
+		// Sample data
+		// DataManager can be accessed globally.
+		// When you set the relative area information, consider the owner building's bound.
+		//DataManager.AddARestroom(true, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_MALE_RESTROOM_ROOMNUM, 2, 640, 450, 840, 660);
+		//DataManager.AddARestroom(false, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_FEMALE_RESTROOM_ROOMNUM, 3, 1200, 450, 1400, 660);
+		
+		// Restroom layout for the N1. Not really same though.. We might just use the above layout with other building's floor image.
+		DataManager.AddARestroom(true, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_MALE_RESTROOM_ROOMNUM, 2, 1170, 1280, 1370, 1500);
+		DataManager.AddARestroom(false, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_FEMALE_RESTROOM_ROOMNUM, 3, 110, 1280, 310, 1500);
+	}
+}
