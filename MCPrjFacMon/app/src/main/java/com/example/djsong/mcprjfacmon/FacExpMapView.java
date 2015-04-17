@@ -102,7 +102,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
     /**
      * The duration (in millisec) of mTimedTouchList element.
      * */
-    private long mTouchListCacheDuration = 500;
+    private long mTouchListCacheDuration = 700;
 
     /**
      * These are desired coordinates to be shown at the screen center while zooming in/out.
