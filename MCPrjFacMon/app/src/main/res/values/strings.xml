@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MCPrjFacMon</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="app_desc">[CS442] Term Project Test</string>
+
+    <string name="title_activity_fac_exp">FacExpActivity</string>
+    <string name="fac_exp_desc">Facility Exploration View</string>
+</resources>
