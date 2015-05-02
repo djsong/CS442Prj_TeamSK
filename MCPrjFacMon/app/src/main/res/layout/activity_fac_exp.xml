@@ -51,6 +51,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />
+        <Button
+            android:id="@+id/next_floor_btn"
+            android:drawablePadding="2dp"
+            android:text="Next Floor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
     </LinearLayout>
 
     <LinearLayout

@@ -8,12 +8,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 
 public class MainActivity extends ActionBarActivity {
 
     Button mShowCurrBldgBtn;
     EditText mServerAddrEdit;
+
+    ImageView mTeamLogoImage;
 
     public static final String INTENT_KEY_FacExpActivity_SERVERADDR = "ServerAddr";
 
@@ -36,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
 
                 // For any data that need to be transmitted for facility exploration activity.
                 Intent IntentForFacExpAct = new Intent(getApplicationContext(), FacExpActivity.class);
+                IntentForFacExpAct.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
                 // Any fallback in the case of empty address field?
 
@@ -45,6 +49,10 @@ public class MainActivity extends ActionBarActivity {
                 startActivityForResult(IntentForFacExpAct, REQUEST_CODE_FACEXPACT);
             }
         });
+
+        mTeamLogoImage = (ImageView)findViewById(R.id.teamlogo_imageView);
+        // 01 for Hyojin and 02 for Dambi kkkkk
+        mTeamLogoImage.setImageResource(R.drawable.team_smoothie_king_image_02);
     }
 
 

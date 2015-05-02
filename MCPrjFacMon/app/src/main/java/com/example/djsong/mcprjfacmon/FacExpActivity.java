@@ -31,9 +31,18 @@ public class FacExpActivity extends ActionBarActivity {
 
     Button mBackToMainMenuBtn;
 
+    Button mSearchBtn;
+
+    Button mNextFloorBtn;
+
     FacExpMapView mBuildingMapView;
 
     ServerCommThread mCommThreadObj = null;
+
+    /**
+     * For now, I have not much idea on this, and just copy-pasting..
+     * */
+    public static final int REQUEST_CODE_FACSEARCHACT = 1002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +64,39 @@ public class FacExpActivity extends ActionBarActivity {
                 finish();
             }
         });
+
+        // Go to search activity
+        mSearchBtn = (Button)findViewById(R.id.search_btn);
+        mSearchBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+
+                Intent IntentForFacSearchAct = new Intent(getApplicationContext(), FacSearchActivity.class);
+                IntentForFacSearchAct.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                // When we need to transmit some data through the intent..
+                //IntentForFacSearchAct.putExtra
+
+                startActivityForResult(IntentForFacSearchAct, REQUEST_CODE_FACSEARCHACT);
+            }
+        } );
+
+        mNextFloorBtn = (Button)findViewById(R.id.next_floor_btn);
+        mNextFloorBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                mBuildingMapView.CycleCurrentFloor();
+
+                int CurrFloor = mBuildingMapView.GetCurrentFloor();
+                // Show some floor info message. no zero.. kk
+                Toast.makeText(getApplicationContext(),
+                        CurrFloor < 0 ? ("B" + (-1 * CurrFloor) + " Floor") : (
+                            CurrFloor == 1 ? "1st Floor" : ( CurrFloor == 2 ? "2nd Floor" : ( CurrFloor == 3 ? "3rd Floor" :
+                                ( CurrFloor + "th Floor" ) ) )
+                        ),
+                        Toast.LENGTH_LONG).show();
+            }
+        } );
 
         // Map exploration layer
         LinearLayout FacExpMapLayout = (LinearLayout) findViewById(R.id.FacExpMapLayout);
@@ -114,6 +156,24 @@ public class FacExpActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /**
+     * When you return from other activity.
+     * */
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        if(requestCode == REQUEST_CODE_FACSEARCHACT)
+        {
+            if(resultCode == RESULT_OK)
+            {
+                // Do some if we need to.. We can get some return info from the intent.
+            }
+        }
+
     }
 
     /** This is just like a hack for the project demonstration. */

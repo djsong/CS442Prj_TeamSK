@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.djsong.mcprjfacmon" >
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +19,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:label="@string/title_activity_fac_exp" android:name=".FacExpActivity">
+            android:name=".FacExpActivity"
+            android:label="@string/title_activity_fac_exp" >
+        </activity>
+        <activity
+            android:name=".FacSearchActivity"
+            android:label="@string/title_activity_fac_search"
+            android:parentActivityName=".FacExpActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="FacExpActivity" />
         </activity>
     </application>
 

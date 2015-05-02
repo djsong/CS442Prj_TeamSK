@@ -25,6 +25,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -44,14 +45,30 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
     private Paint mPaintObject = null;
 
     /** Real-time asynchronous rendering interface.. */
-    ImageRenderingThread mRenderingThread = null;
+    private ImageRenderingThread mRenderingThread = null;
 
-    Bitmap mCurrentFloorImage = null;
-    Bitmap mFloorImage_01 = null;
+    /**
+     * Contains bitmap of all floor, with its floor number as the key.
+     * */
+    private HashMap<Integer, Bitmap> mAllFloorImage = new HashMap<Integer, Bitmap>();
+    private Bitmap GetCurrentFloorImage(){
+        return mAllFloorImage.get( new Integer(mCurrentFloor) );
+    }
+    /**
+     * Current one among mAllFloorImage
+     * */
+    private Bitmap mCurrentFloorImage = null;
 
     /** -1 is B1, no 0 */
     private int mCurrentFloor = 1;
     public int GetCurrentFloor() {return mCurrentFloor;}
+
+    /**
+     * Min and Max will be set properly during the init.
+     * */
+    private int mMinFloor = 1;
+    private int mMaxFloor = 1;
+
 
     //////////////////////////////////////////////////////////////////////
 
@@ -102,7 +119,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
     /**
      * The duration (in millisec) of mTimedTouchList element.
      * */
-    private long mTouchListCacheDuration = 700;
+    private long mTouchListCacheDuration = 600;
 
     /**
      * These are desired coordinates to be shown at the screen center while zooming in/out.
@@ -154,11 +171,20 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
         // The image of the building map should come from the server for the real world service.
         // We cannot do that for this project, so just put an image at the client side.
         // Most facility creation data are come from the server though..
-        //mFloorImage_01 = BitmapFactory.decodeResource(getResources(), R.drawable.sample_building_floor_01_1024x1024);
-        // We also got an image for the 1st floor of N1 building.
-        mFloorImage_01 = BitmapFactory.decodeResource(getResources(), R.drawable.n1_floor_01_1024x1024);
+
+        // We got an image for the 1st floor of N1 building. kk
+        Bitmap FloorImage_01 = BitmapFactory.decodeResource(getResources(), R.drawable.n1_floor_01_1024x1024);
+        mAllFloorImage.put( new Integer(1), FloorImage_01 );
+
+        Bitmap FloorImage_02 = BitmapFactory.decodeResource(getResources(), R.drawable.sample_building_floor_02_1024x1024);
+        mAllFloorImage.put( new Integer(2), FloorImage_02 );
+
+        // They should from the server too, but anyway kk
+        mMinFloor = 1;
+        mMaxFloor = 2;
+
         mCurrentFloor = 1; // 1 by default.. we might not have other floor for this semester.. kk
-        mCurrentFloorImage = mFloorImage_01; // by default.
+        mCurrentFloorImage = GetCurrentFloorImage();
 
         // The PresentCoord settings below are just for the N1 floor image.
         mPresentCoordX = -mSupposedOriginalMapWidth / 2;
@@ -218,17 +244,37 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
         {
             mInternalBufferCanvas.drawColor(Color.WHITE); // Clearing
 
-            mCurrentFloorImage = mFloorImage_01; // Could be set by some variable later..
+            mCurrentFloorImage = GetCurrentFloorImage(); // Could be set by some variable later..
 
-            // Why the size is different from expected..?
-            RectF DestRect = new RectF(0, 0, mSupposedOriginalMapWidth, mSupposedOriginalMapHeight);
-            Rect SrcRect = new Rect(0, 0, mCurrentFloorImage.getWidth(), mCurrentFloorImage.getHeight());
-            mInternalBufferCanvas.drawBitmap(mCurrentFloorImage, SrcRect, DestRect, mPaintObject);
+            if(mCurrentFloorImage != null) {
+                // Why the size is different from expected..?
+                RectF DestRect = new RectF(0, 0, mSupposedOriginalMapWidth, mSupposedOriginalMapHeight);
+                Rect SrcRect = new Rect(0, 0, mCurrentFloorImage.getWidth(), mCurrentFloorImage.getHeight());
+                mInternalBufferCanvas.drawBitmap(mCurrentFloorImage, SrcRect, DestRect, mPaintObject);
+            }
 
             for (int FacIndex = 0; FacIndex < mUsableFacilities.size(); ++FacIndex) {
-                mUsableFacilities.get(FacIndex).OnMapDrawing(mInternalBufferCanvas);
+                FacilityInfoBase CurrFacility = mUsableFacilities.get(FacIndex);
+                // Draw facilities only for current floor.
+                if (CurrFacility.GetFloorNumber() == mCurrentFloor) {
+                    CurrFacility.OnMapDrawing(mInternalBufferCanvas);
+                }
             }
         }
+    }
+
+    /**
+     * Safe cycling of floor number, and it update the buffer with new floor image too.
+     * */
+    public void CycleCurrentFloor(){
+        mCurrentFloor++;
+        if(mCurrentFloor == 0) { // No zero
+            mCurrentFloor = 1;
+        }
+        if(mCurrentFloor > mMaxFloor) {
+            mCurrentFloor = mMinFloor;
+        }
+        UpdateInternalBuffer();
     }
 
     protected float GetPresentWidth() { return mInternalBufferBitmap.getWidth() * mPresentScaleX; }
@@ -634,7 +680,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
 
                 Canvas LockedCanvas = mHolder.lockCanvas(null);
                 synchronized (mHolder) {
-                    //UpdateInternalBuffer(); // Probably no need to call this in real time? but we might need eventually..
+                    //UpdateInternalBuffer(); // Probably no need to call this in real time.. but we might need eventually..?
                     PresentToCanvas(LockedCanvas);
                 }
 

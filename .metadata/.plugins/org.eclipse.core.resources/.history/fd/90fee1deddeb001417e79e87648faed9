@@ -49,11 +49,13 @@ public class ServerMain
 		// Sample data
 		// DataManager can be accessed globally.
 		// When you set the relative area information, consider the owner building's bound.
-		//DataManager.AddARestroom(true, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_MALE_RESTROOM_ROOMNUM, 2, 640, 450, 840, 660);
-		//DataManager.AddARestroom(false, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_FEMALE_RESTROOM_ROOMNUM, 3, 1200, 450, 1400, 660);
 		
-		// Restroom layout for the N1. Not really same though.. We might just use the above layout with other building's floor image.
+		// Restroom layout for the N1. Not really same though.. 
 		DataManager.AddARestroom(true, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_MALE_RESTROOM_ROOMNUM, 2, 1170, 1280, 1370, 1500);
 		DataManager.AddARestroom(false, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_FEMALE_RESTROOM_ROOMNUM, 3, 110, 1280, 310, 1500);
+		
+		// For second floor
+		DataManager.AddARestroom(true, 2, 211, 2, 640, 450, 840, 660);
+		DataManager.AddARestroom(false, 2, 212, 3, 1200, 450, 1400, 660);
 	}
 }
