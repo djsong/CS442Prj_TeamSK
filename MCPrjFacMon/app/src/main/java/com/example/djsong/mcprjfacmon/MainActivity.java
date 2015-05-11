@@ -52,7 +52,7 @@ public class MainActivity extends ActionBarActivity {
 
         mTeamLogoImage = (ImageView)findViewById(R.id.teamlogo_imageView);
         // 01 for Hyojin and 02 for Dambi kkkkk
-        mTeamLogoImage.setImageResource(R.drawable.team_smoothie_king_image_02);
+        mTeamLogoImage.setImageResource(R.drawable.team_smoothie_king_image_02_lower);
     }
 
 

@@ -116,6 +116,12 @@ public class FacRestroomInfo extends FacilityInfoBase
         ReturnRect.right += mRestroomIconImageOffset.x;
         ReturnRect.bottom += mRestroomIconImageOffset.y;
 
+        // Finally, apply the rendering scale
+        ReturnRect.left = ApplyRenderScale(ReturnRect.left);
+        ReturnRect.top = ApplyRenderScale(ReturnRect.top);
+        ReturnRect.right = ApplyRenderScale(ReturnRect.right);
+        ReturnRect.bottom = ApplyRenderScale(ReturnRect.bottom);
+
         return ReturnRect;
     }
 }

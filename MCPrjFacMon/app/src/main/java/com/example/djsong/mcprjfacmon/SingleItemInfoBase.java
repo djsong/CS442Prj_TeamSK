@@ -68,11 +68,11 @@ public class SingleItemInfoBase
         else{
             InDrawPaint.setStyle(Paint.Style.STROKE);
         }
-        InDrawPaint.setStrokeWidth(mBaseOnMapDrawStrokeWidth);
+        InDrawPaint.setStrokeWidth( Math.max(1.0f, GetOwner().ApplyRenderScale(mBaseOnMapDrawStrokeWidth)) );
         InDrawPaint.setARGB(mBaseOnMapDrawColorA, mBaseOnMapDrawColorR, mBaseOnMapDrawColorG, mBaseOnMapDrawColorB);
 
-        Rect AbsRect = GetAbsoluteOnMapAreaRect();
-        InDrawCanvas.drawRect(AbsRect.left, AbsRect.top, AbsRect.right, AbsRect.bottom, InDrawPaint);
+        Rect AbsDrawRect = GetAbsoluteOnMapAreaDrawRect();
+        InDrawCanvas.drawRect(AbsDrawRect.left, AbsDrawRect.top, AbsDrawRect.right, AbsDrawRect.bottom, InDrawPaint);
 
         if(mbIsOccupied)
         {
@@ -102,7 +102,8 @@ public class SingleItemInfoBase
     public void SetUsageStateImageScale(float InScale) {mUsageStateImageScale = InScale;}
 
     /** Returns an area rect that is absolute to its owner.
-     * Could be still relative in terms of whole world..? kk */
+     * Could be still relative in terms of whole world..? kk
+     * This is logical coordinate (not for drawing). */
     public Rect GetAbsoluteOnMapAreaRect()
     {
         // I don't know how Java automatically manages dynamically created object..
@@ -115,6 +116,21 @@ public class SingleItemInfoBase
         ReturnRect.top += OwnerRect.top;
         ReturnRect.right += OwnerRect.left;
         ReturnRect.bottom += OwnerRect.top;
+
+        return ReturnRect;
+    }
+
+    /**
+     * Based on GetAbsoluteOnMapAreaRect just above, apply the rendering scale.
+     * */
+    public Rect GetAbsoluteOnMapAreaDrawRect()
+    {
+        Rect ReturnRect = GetAbsoluteOnMapAreaRect();
+
+        ReturnRect.left = GetOwner().ApplyRenderScale(ReturnRect.left);
+        ReturnRect.top = GetOwner().ApplyRenderScale(ReturnRect.top);
+        ReturnRect.right = GetOwner().ApplyRenderScale(ReturnRect.right);
+        ReturnRect.bottom = GetOwner().ApplyRenderScale(ReturnRect.bottom);
 
         return ReturnRect;
     }
@@ -141,6 +157,12 @@ public class SingleItemInfoBase
         ReturnRect.top += OwnerRect.top;
         ReturnRect.right += OwnerRect.left;
         ReturnRect.bottom += OwnerRect.top;
+
+        // Finally, apply the rendering scale
+        ReturnRect.left = GetOwner().ApplyRenderScale(ReturnRect.left);
+        ReturnRect.top = GetOwner().ApplyRenderScale(ReturnRect.top);
+        ReturnRect.right = GetOwner().ApplyRenderScale(ReturnRect.right);
+        ReturnRect.bottom = GetOwner().ApplyRenderScale(ReturnRect.bottom);
 
         return ReturnRect;
     }

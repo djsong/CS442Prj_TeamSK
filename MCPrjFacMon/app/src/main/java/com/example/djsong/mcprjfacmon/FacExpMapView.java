@@ -75,11 +75,41 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
     //////////////////////////////////////////////////////////////////////
     // Resolutions..
 
-    /** They are constant.. I have no better idea right now */
-    private static final int mSupposedOriginalMapWidth = 2048;
-    private static final int mSupposedOriginalMapHeight = 2048;
-    float GetOriginalMapDrawScaleX() { return (float)mSupposedOriginalMapWidth / (float)mCurrentFloorImage.getWidth(); }
-    float GetOriginalMapDrawScaleY() { return (float)mSupposedOriginalMapHeight / (float)mCurrentFloorImage.getHeight(); }
+    /**
+     * The map's coordinate range that the coordinate data maintained at the server is based on.
+     * These are converted by mRenderBufferScale for the rendering to the internal buffer.
+     * */
+    public static final int mLogicalMapWidth = 2048;
+    public static final int mLogicalMapHeight = 2048;
+
+    /**
+     * This determines how big will the internal buffer for the rendering.
+     * If we confront any kind of performance problem, decrease it.
+     * In addition, when you decrease this, consider increase the mPresentScale
+     * */
+    public static final float mRenderBufferScale = 1.0f;
+
+    public static int GetRenderBufferWidth() { return (int)((float)mLogicalMapWidth * mRenderBufferScale); }
+    public static int GetRenderBufferHeight() { return (int)((float)mLogicalMapHeight * mRenderBufferScale); }
+
+    public static int FromMapCoordToRenderCoord(int MapCoordValue)
+    {
+        return (int)((float)MapCoordValue * mRenderBufferScale);
+    }
+    public static Point FromMapCoordToRenderCoord(int MapCoordX, int MapCoordY) // Little different version.
+    {
+        Point RetVal = new Point(0, 0);
+        RetVal.x = (int)((float)MapCoordX * mRenderBufferScale);
+        RetVal.y = (int)((float)MapCoordY * mRenderBufferScale);
+        return RetVal;
+    }
+
+    /**
+     * Render buffer's draw scale to the map image size.
+     * */
+    float GetRenderBufferDrawScaleX() { return (float)GetRenderBufferWidth() / (float)mCurrentFloorImage.getWidth(); }
+    float GetRenderBufferDrawScaleY() { return (float)GetRenderBufferHeight() / (float)mCurrentFloorImage.getHeight(); }
+
 
     /** I am not sure if we got some means to access device size at any time..? */
     private int mCachedScreenSizeX = 720;
@@ -187,11 +217,11 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
         mCurrentFloorImage = GetCurrentFloorImage();
 
         // The PresentCoord settings below are just for the N1 floor image.
-        mPresentCoordX = -mSupposedOriginalMapWidth / 2;
-        mPresentCoordY = -mSupposedOriginalMapHeight / 2;
+        Point PresentCoordPoint = FromMapCoordToRenderCoord(-mLogicalMapWidth / 2, -mLogicalMapHeight / 2);
+        mPresentCoordX = PresentCoordPoint.x;
+        mPresentCoordY = PresentCoordPoint.y;
         mLastTouchX = mPresentCoordX;
         mLastTouchY = mPresentCoordY;
-
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -230,7 +260,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
     private void CreateInternalBuffer(int w, int h)
     {
         // Well, just create with fixed size for now..
-        mInternalBufferBitmap = Bitmap.createBitmap(mSupposedOriginalMapWidth, mSupposedOriginalMapHeight, Bitmap.Config.ARGB_8888);
+        mInternalBufferBitmap = Bitmap.createBitmap(GetRenderBufferWidth(), GetRenderBufferHeight(), Bitmap.Config.ARGB_8888);
         mInternalBufferCanvas = new Canvas();
         mInternalBufferCanvas.setBitmap(mInternalBufferBitmap);
     }
@@ -248,7 +278,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
 
             if(mCurrentFloorImage != null) {
                 // Why the size is different from expected..?
-                RectF DestRect = new RectF(0, 0, mSupposedOriginalMapWidth, mSupposedOriginalMapHeight);
+                RectF DestRect = new RectF(0, 0, GetRenderBufferWidth(), GetRenderBufferHeight());
                 Rect SrcRect = new Rect(0, 0, mCurrentFloorImage.getWidth(), mCurrentFloorImage.getHeight());
                 mInternalBufferCanvas.drawBitmap(mCurrentFloorImage, SrcRect, DestRect, mPaintObject);
             }
@@ -631,7 +661,8 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
             FacilityInfoBase NewFacData = null;
             if(CurrData.mFacilityType == CommPacketDef.FACTYPE_RESTROOM)
             {
-
+                // The facility area data from the server is based on logical coordinate.
+                // They will be scale to the internal buffer's resolution at inside of the class.
                 NewFacData = new FacRestroomInfo(this, CurrData.mFloorNumber, CurrData.mRoomNumber, CurrData.mTotalItemNumber,
                         new Rect(CurrData.mRelativeAreaLeft, CurrData.mRelativeAreaTop, CurrData.mRelativeAreaRight, CurrData.mRelativeAreaBottom),
                         CurrData.mbMaleRestRoom);

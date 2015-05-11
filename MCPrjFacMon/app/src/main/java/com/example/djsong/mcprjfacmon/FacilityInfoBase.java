@@ -25,6 +25,21 @@ public class FacilityInfoBase
     private FacExpMapView mOwnerBuildingView;
 
     /**
+     * It comes from mRenderBufferScale of owner FacExpMapView.
+     * All the coordinates here are expressed in the logical scale, and they need to be scaled by this for the rendering.
+     * */
+    private float mRenderingScale;
+    public float GetRenderingScale() {return mRenderingScale;}
+    public int ApplyRenderScale(int MapCoordValue)
+    {
+        return (int)((float)MapCoordValue * mRenderingScale);
+    }
+    public float ApplyRenderScale(float MapCoordValue)
+    {
+        return MapCoordValue * mRenderingScale;
+    }
+
+    /**
      * Might not need this..? but just for convenience anyway..
      * Let's use constants defined in the CommPacketDef.
      * This needs to be set at the constructor of each sub-class.
@@ -48,7 +63,7 @@ public class FacilityInfoBase
      * */
     protected int mSpecifiedTotalItemNum;
 
-    /** Basic dimension relative to its owner */
+    /** Basic dimension relative to its owner, in logical coordinate which is the same as what server has. */
     private Rect mRelativeAreaRect;
 
     protected Paint mDrawPaint;
@@ -59,12 +74,14 @@ public class FacilityInfoBase
     protected int mBaseOnMapDrawColorR = 0;
     protected int mBaseOnMapDrawColorG = 0;
     protected int mBaseOnMapDrawColorB = 0;
-    protected float mBaseOnMapDrawStrokeWidth = 5.0f;
+    protected float mBaseOnMapDrawStrokeWidth = 8.0f;
     protected boolean mbFillBaseOnMapDraw = false;
 
     public FacilityInfoBase(FacExpMapView InOwner, int InFloorNum, int InRoomNum, int InTotalItemNum, Rect InRelativeAreaRect)
     {
         mOwnerBuildingView = InOwner;
+        mRenderingScale = InOwner.mRenderBufferScale; // Well, we can just use mRenderBufferScale at all time, but let's just cache this.
+
         mFloorNumber = InFloorNum;
         mRoomNumber = InRoomNum;
 
@@ -97,10 +114,12 @@ public class FacilityInfoBase
         else{
             mDrawPaint.setStyle(Paint.Style.STROKE);
         }
-        mDrawPaint.setStrokeWidth(mBaseOnMapDrawStrokeWidth);
+        mDrawPaint.setStrokeWidth( Math.max(1.0f, ApplyRenderScale(mBaseOnMapDrawStrokeWidth)) );
         mDrawPaint.setARGB(mBaseOnMapDrawColorA, mBaseOnMapDrawColorR, mBaseOnMapDrawColorG, mBaseOnMapDrawColorB);
-        InDrawCanvas.drawRect(mRelativeAreaRect.left, mRelativeAreaRect.top,
-                mRelativeAreaRect.right, mRelativeAreaRect.bottom, mDrawPaint);
+        InDrawCanvas.drawRect(
+                ApplyRenderScale(mRelativeAreaRect.left), ApplyRenderScale(mRelativeAreaRect.top),
+                ApplyRenderScale(mRelativeAreaRect.right), ApplyRenderScale(mRelativeAreaRect.bottom),
+                mDrawPaint);
 
 
         // Draw all the sub-items
@@ -143,5 +162,6 @@ public class FacilityInfoBase
     public int GetFloorNumber() {return mFloorNumber;}
     public int GetRoomNumber() {return mRoomNumber;}
 
+    /** This is in logical coordinate. For the rendering, you need to scale it with mRenderingScale */
     public Rect GetRelativeArea() {return mRelativeAreaRect;}
 }
