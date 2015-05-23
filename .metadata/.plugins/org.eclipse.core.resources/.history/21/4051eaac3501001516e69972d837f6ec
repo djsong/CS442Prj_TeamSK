@@ -1,0 +1,63 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+/**
+ * [CS442] Mobile Computing, Spring 2015
+ *
+ * Sensor manager main entry point, communication to the server, etc..
+ * */
+public class SensorMgrMain 
+{
+	private static Socket serverCommSocket;
+
+	public static void main(String[] args) 
+	{
+
+		try {
+			
+			// The first argument is the IP address of the server, and the second argument is the port number.
+			// However, we also allow default values.
+			String FirstArgumentString = "127.0.0.1";
+			String SecondArgumentString = "9101";
+			if(args.length >= 2)
+			{
+				// Execution example: "java SensorMgrMain 127.0.0.1 9101"
+				FirstArgumentString = args[0];
+				SecondArgumentString = args[1];
+			}
+			
+			System.out.println("Connecting to the server at " + FirstArgumentString + ":" + SecondArgumentString);
+			
+			String ServerAddr = FirstArgumentString;
+			Integer ServerPort = new Integer(SecondArgumentString);
+			
+			serverCommSocket = new Socket(ServerAddr, ServerPort);
+			
+			// Connection established. Let's do the communication.
+			boolean bLoop = true;
+			while(bLoop)
+			{		
+				// Just receive the information
+				try {
+					
+					// Read the data from USB port at this point, let's assume like below..
+					String SendString = "FLOOR=1 ROOM=105 ITEM=2 INUSE=1";
+					
+					// Send the string to the server
+					PrintWriter SensorDataWriter = new PrintWriter(serverCommSocket.getOutputStream());
+					SensorDataWriter.println(SendString);
+					SensorDataWriter.flush();
+				
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		} catch (Exception e) {
+			System.err.println("Exception occurred in main");
+		}
+
+	}
+}

@@ -22,17 +22,15 @@ public class ServerMain
 			// Load server data before any communication thread gets on. 
 			LoadFacilityData();
 			
+			// Open the communication channels for the sensor and clients. 
+			
+			SensorConnThread SensorConnThreadObj = new SensorConnThread();
+			SensorConnThreadObj.start();
+			
 			ClientConnThread ClientConnThreadObj = new ClientConnThread();
 			ClientConnThreadObj.start();
 			
 			// Looks like the process won't be terminated until created threads are done..?
-			
-			
-			// Do some communication to the sensors too..
-			
-			// Temporary example for now..
-			SensorCommThread SensorCommThreadObj = new SensorCommThread();
-			SensorCommThreadObj.start();
 			
 		} catch (Exception e) {
 			System.err.println("Exception occurred in main");

@@ -127,14 +127,17 @@ public class DataManager
 	 * When you are going to set the usage state from the incoming sensor signal.. (of restroom) 
 	 * @param InFloorNum, InRoomNum, InItemNum : They are like the identifying numbers for the facility item
 	 * @param bInOccupied : The data to be set by this.
+	 * @return : Returns false if no matching room or item is found.
 	 * */
-	public static void SetSingleRestroomItemOccupied(int InFloorNum, int InRoomNum, int InItemNum, boolean bInOccupied)
+	public static boolean SetSingleRestroomItemOccupied(int InFloorNum, int InRoomNum, int InItemNum, boolean bInOccupied)
 	{
 		SingleFacilityItemData SpecifiedItem = GetSpecificItem(CommPacketDef.FACTYPE_RESTROOM, InFloorNum, InRoomNum, InItemNum);
 		if(SpecifiedItem != null)
 		{
 			SpecifiedItem.SetOccupied(bInOccupied);
+			return true;
 		}
+		return false;
 	}
 	
 	public static boolean GetSingleRestroomItemOccupied(int InFloorNum, int InRoomNum, int InItemNum)
@@ -152,14 +155,17 @@ public class DataManager
 	 * When you are going to set the usage state from the incoming sensor signal.. (of parking lot) 
 	 * @param InFloorNum, InRoomNum, InItemNum : They are like the identifying numbers for the facility item
 	 * @param bInOccupied : The data to be set by this.
+	 * @return : Returns false if no matching room or item is found.
 	 * */
-	public static void SetSingleParkingLotItemOccupied(int InFloorNum, int InRoomNum, int InItemNum, boolean bInOccupied)
+	public static boolean SetSingleParkingLotItemOccupied(int InFloorNum, int InRoomNum, int InItemNum, boolean bInOccupied)
 	{
 		SingleFacilityItemData SpecifiedItem = GetSpecificItem(CommPacketDef.FACTYPE_PARKINGLOT, InFloorNum, InRoomNum, InItemNum);
 		if(SpecifiedItem != null)
 		{
 			SpecifiedItem.SetOccupied(bInOccupied);
+			return true;
 		}
+		return false;
 	}
 	
 	public static boolean GetSingleParkingLotItemOccupied(int InFloorNum, int InRoomNum, int InItemNum)

@@ -1,0 +1,24 @@
+/**
+ * [CS442] Mobile Computing, Spring 2015
+ *
+ * Sensor manager main entry point, communication to the server, etc..
+ * */
+
+public class SensorMgrMain 
+{
+
+	public static void main(String[] args) 
+	{
+
+		try {
+			System.out.println(args);
+			// Let's make things simple.. the first argument is the IP address of the server.
+			String ServerAddr = args[1];
+
+			
+		} catch (Exception e) {
+			System.err.println("Exception occurred in main");
+		}
+
+	}
+}
