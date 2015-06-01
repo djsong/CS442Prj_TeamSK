@@ -96,9 +96,6 @@ class SensorCommThread extends Thread
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				
-				// When the communication fails for any reason, just finish this.
-				break;
 			}
 		}
 	}
@@ -145,15 +142,19 @@ class SensorCommThread extends Thread
 				}
 				else if(ParamKey.compareTo("INUSE") == 0)
 				{
-					// We consider just 1 as true, and any other numbers as false.
-					// We might have 2 for the false..
 					ParsedUsageState = 
-							(ParamValue.compareTo("1") == 0 || ParamValue.toUpperCase().compareTo("TRUE") == 0 || ParamValue.toUpperCase().compareTo("ON") == 0) ?
-									true : false;
+							(ParamValue.compareTo("0") == 0 || ParamValue.toUpperCase().compareTo("FALSE") == 0 || ParamValue.toUpperCase().compareTo("OFF") == 0) ?
+									false : true;
 				}
 			}
 		}
-
+		
+		//////////////////////////////////////////////////
+		// Just a workaround for the project demonstration.
+		// We have a little problem regarding the sensor port connection..
+		ParsedFloorNum = 1;  
+		//////////////////////////////////////////////////
+		
 		// When you get the data from the sensor, set the data by calling DataManager.SetSingleRestroomItemOccupied();
 		if( 
 				DataManager.SetSingleRestroomItemOccupied(ParsedFloorNum, ParsedRoomNum, ParsedItemNum, ParsedUsageState) == true 

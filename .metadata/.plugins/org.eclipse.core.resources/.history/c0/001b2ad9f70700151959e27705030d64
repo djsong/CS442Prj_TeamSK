@@ -153,7 +153,13 @@ class SensorCommThread extends Thread
 				}
 			}
 		}
-
+		
+		//////////////////////////////////////////////////
+		// Just a workaround for the project demonstration.
+		// We have a little problem regarding the sensor port connection..
+		ParsedFloorNum = 1;  
+		//////////////////////////////////////////////////
+		
 		// When you get the data from the sensor, set the data by calling DataManager.SetSingleRestroomItemOccupied();
 		if( 
 				DataManager.SetSingleRestroomItemOccupied(ParsedFloorNum, ParsedRoomNum, ParsedItemNum, ParsedUsageState) == true 

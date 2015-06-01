@@ -114,7 +114,7 @@ public class DataManager
 		{
 			SingleFacilityItemData CurrItem = mFacItems.get(ItemIndex);
 			// We have a little problem regarding the floor number transmission from the sensor.
-			// Room number is already regarded as unique, so just ignore the floor number for now.
+			// room number is already regarded as unique, so just ignore the floor number for now.
 			if(CurrItem.GetFacilityType() == InFacType && //CurrItem.GetFloorNumber() == InFloorNum &&
 				CurrItem.GetRoomNumber() == InRoomNum && CurrItem.GetItemNumber() == InItemNum)
 			{
