@@ -20,6 +20,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Parcelable;
+import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -128,8 +129,8 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
     private float mPresentScaleX = 1.0f;
     private float mPresentScaleY = 1.0f;
 
-    private int mLastTouchX;
-    private int mLastTouchY;
+    private float mLastTouchX = 0.0f;
+    private float mLastTouchY = 0.0f;
 
     /**
      * Touch point list for last some duration for circular zooming interaction.
@@ -175,7 +176,35 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
 
     int mCachedLastCircularGestureState = CIRCULAR_GESTURE_NONE;
 
+    /**
+     * Only for the single-touch circular zooming.. Should be bigger than 1.0
+     * */
     private static final float mBasicZoomingSensitivity = 1.02f;
+
+    //////////////////////////////
+    // The circular gesture stuff does not really working fine
+    // We need to provide the multi-touch zoomming too.
+
+    private int mCachedLastTouchPointNum = 0;
+
+    private float mLastTouchX2 = 0.0f;
+    private float mLastTouchY2 = 0.0f;
+
+    /**
+     * The initial distance between the two touching point when the multi-touch started.
+     * */
+    private float mMultiTouchStartDistance = 0.0f;
+
+    private float mMultiTouchStartPresentScaleX = 1.0f;
+    private float mMultiTouchStartPresentScaleY = 1.0f;
+
+    /**
+     * For the conventional multi-touch zooming..
+     * */
+    private static final float mMultiTouchZoomingSensitivity = 1.0f;
+
+
+    // We might better to have multi-touch zooming state variable..
 
     //////////////////////////////////////////////////////////////////////
 
@@ -193,8 +222,8 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
         holder.addCallback(this);
         mRenderingThread = new ImageRenderingThread(context, holder);
 
-        mLastTouchX = 0;
-        mLastTouchY = 0;
+        mLastTouchX = 0.0f;
+        mLastTouchY = 0.0f;
 
         mUsableFacilities = new ArrayList<FacilityInfoBase>();
 
@@ -337,16 +366,24 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
     {
         int action = event.getAction();
 
-        // Needed for multi-touch event handling.. but I cannot test it even I implemented it, as I don't have Android device.
-        //int TouchPointerCount = event.getPointerCount();
+        int TouchPointNum = event.getPointerCount();
 
-        int X = (int) event.getX();
-        int Y = (int) event.getY();
+        float X = event.getX();
+        float Y = event.getY();
 
-        int MovingDeltaX = 0;
-        int MovingDeltaY = 0;
+        float X2 = (TouchPointNum >= 2) ? event.getX(1) : 0.0f;
+        float Y2 = (TouchPointNum >= 2) ? event.getY(1) : 0.0f;
 
-        UpdateTimedTouchList(X, Y);
+        float DistanceBetweenTwoTouchPoints = (TouchPointNum >= 2) ?
+                FloatMath.sqrt( (X - X2) * (X - X2) + (Y - Y2) * (Y - Y2) ) : 0.0f;
+
+        // When this is true, no circular gesture.
+        boolean bDoMultiTouchZooming = false;
+
+        float MovingDeltaX = 0.0f;
+        float MovingDeltaY = 0.0f;
+
+        UpdateTimedTouchList((int)X, (int)Y);
         int CircularGestureState = CIRCULAR_GESTURE_NONE;
 
         switch (action) {
@@ -354,6 +391,15 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
 
                 break;
             case MotionEvent.ACTION_DOWN:
+
+                if(mCachedLastTouchPointNum < 2 && TouchPointNum >= 2)
+                {
+                    // Start the multi-touch zooming by save the initial distance between the two points.
+                    mMultiTouchStartDistance = DistanceBetweenTwoTouchPoints;
+
+                    mMultiTouchStartPresentScaleX = mPresentScaleX;
+                    mMultiTouchStartPresentScaleY = mPresentScaleY;
+                }
 
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -368,6 +414,18 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
                 // In Proceedings of the SIGCHI Conference on Human Factors in Computing Systems (pp. 2615-2624).
                 CircularGestureState = DetectCircularGesture();
 
+                // No circular gesture for the multi-touch contact.
+                if(TouchPointNum >= 2)
+                {
+                    CircularGestureState = CIRCULAR_GESTURE_NONE;
+                    bDoMultiTouchZooming = true;
+
+                    // Let's make little similar stuff for the circular zooming..
+                    // I'm not that sure about this yet..
+                    mCachedInternalBufferCenterCoordForZoomX = mPresentCoordX + (int)GetPresentWidth()/2;
+                    mCachedInternalBufferCenterCoordForZoomY = mPresentCoordY + (int)GetPresentHeight()/2;
+                }
+
                 // Cache the wanted center coordinate of the internal buffer if circular gesture is started or changed direction.
                 if(CircularGestureState != CIRCULAR_GESTURE_NONE && CircularGestureState != mCachedLastCircularGestureState)
                 {
@@ -380,7 +438,25 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
                 break;
         }
 
-        if(CircularGestureState != CIRCULAR_GESTURE_NONE)
+        if(bDoMultiTouchZooming)
+        {
+            // Handle multi-touch contact zooming for continuous multi-touching drag..
+            mPresentScaleX = mMultiTouchZoomingSensitivity * (DistanceBetweenTwoTouchPoints / mMultiTouchStartDistance)
+                    * mMultiTouchStartPresentScaleX;
+
+            mPresentScaleY = mMultiTouchZoomingSensitivity * (DistanceBetweenTwoTouchPoints / mMultiTouchStartDistance)
+                    * mMultiTouchStartPresentScaleY;
+
+            // We might also have to set the mPresentCoordX/Y properly..
+            Point PresentCoordForZoom = GetPresentCoordFromWantedInternalBufferCenterCoord(
+                    mCachedInternalBufferCenterCoordForZoomX, mCachedInternalBufferCenterCoordForZoomY);
+
+            // Not yet..
+            //mPresentCoordX = PresentCoordForZoom.x;
+            //mPresentCoordY = PresentCoordForZoom.y;
+
+        }
+        else if(CircularGestureState != CIRCULAR_GESTURE_NONE)
         {
             // Do the zooming action for circular gesture.
             if(CircularGestureState == CIRCULAR_GESTURE_CLOCKWISE)
@@ -407,8 +483,8 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
         // While not zooming, scrolling based on the touching action.
         else
         {
-            mPresentCoordX += MovingDeltaX;
-            mPresentCoordY += MovingDeltaY;
+            mPresentCoordX += (int)MovingDeltaX;
+            mPresentCoordY += (int)MovingDeltaY;
         }
 
         // Clamp mPresentCoord to prevent the map getting out of screen bound.
@@ -419,8 +495,12 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
 
         mLastTouchX = X;
         mLastTouchY = Y;
+        mLastTouchX2 = X2;
+        mLastTouchY2 = Y2;
 
         mCachedLastCircularGestureState = CircularGestureState;
+
+        mCachedLastTouchPointNum = TouchPointNum;
 
         return true;
     }
