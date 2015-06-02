@@ -399,6 +399,12 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
 
                     mMultiTouchStartPresentScaleX = mPresentScaleX;
                     mMultiTouchStartPresentScaleY = mPresentScaleY;
+
+                    // Let's make little similar stuff for the circular zooming..
+                    // Cache the desired center coordinate when zooming is started.
+                    Point CachedCenterCoord = GetInternalBufferCoordOfScreenCoord(mCachedScreenSizeX/2, mCachedScreenSizeY/2);
+                    mCachedInternalBufferCenterCoordForZoomX = CachedCenterCoord.x;
+                    mCachedInternalBufferCenterCoordForZoomY = CachedCenterCoord.y;
                 }
 
                 break;
@@ -419,11 +425,6 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
                 {
                     CircularGestureState = CIRCULAR_GESTURE_NONE;
                     bDoMultiTouchZooming = true;
-
-                    // Let's make little similar stuff for the circular zooming..
-                    // I'm not that sure about this yet..
-                    mCachedInternalBufferCenterCoordForZoomX = mPresentCoordX + (int)GetPresentWidth()/2;
-                    mCachedInternalBufferCenterCoordForZoomY = mPresentCoordY + (int)GetPresentHeight()/2;
                 }
 
                 // Cache the wanted center coordinate of the internal buffer if circular gesture is started or changed direction.
@@ -447,13 +448,11 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
             mPresentScaleY = mMultiTouchZoomingSensitivity * (DistanceBetweenTwoTouchPoints / mMultiTouchStartDistance)
                     * mMultiTouchStartPresentScaleY;
 
-            // We might also have to set the mPresentCoordX/Y properly..
+            // Similarly to the circular zooming, adjust the present coordinate.
             Point PresentCoordForZoom = GetPresentCoordFromWantedInternalBufferCenterCoord(
                     mCachedInternalBufferCenterCoordForZoomX, mCachedInternalBufferCenterCoordForZoomY);
-
-            // Not yet..
-            //mPresentCoordX = PresentCoordForZoom.x;
-            //mPresentCoordY = PresentCoordForZoom.y;
+            mPresentCoordX = PresentCoordForZoom.x;
+            mPresentCoordY = PresentCoordForZoom.y;
 
         }
         else if(CircularGestureState != CIRCULAR_GESTURE_NONE)
@@ -671,8 +670,8 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
      * */
     private Point GetPresentCoordFromWantedInternalBufferCenterCoord(int WantedCenterX, int WantedCenterY)
     {
-        int RetX = -1 * (int)( (float)(WantedCenterX - mCachedScreenSizeX/2) * mPresentScaleX );
-        int RetY = -1 * (int)( (float)(WantedCenterY - mCachedScreenSizeY/2) * mPresentScaleY );
+        int RetX = -1 * (int)( (float)(WantedCenterX * mPresentScaleX - mCachedScreenSizeX/2) );
+        int RetY = -1 * (int)( (float)(WantedCenterY * mPresentScaleY - mCachedScreenSizeY/2) );
 
         Point RetCoord = new Point(RetX, RetY);
 
