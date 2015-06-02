@@ -177,14 +177,20 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
 
     int mCachedLastCircularGestureState = CIRCULAR_GESTURE_NONE;
 
+    private long mLastCircularGestureDetectTime = 0;
+    /**
+     * Once we detect the circular gesture, it won't be turned off until certain amount of time flows..
+     * */
+    private static final long mCircularGestureMaintainMinDuration = 200;
+
     /**
      * Only for the single-touch circular zooming.. Should be bigger than 1.0
      * */
     private static final float mBasicZoomingSensitivity = 1.02f;
 
     //////////////////////////////
-    // The circular gesture stuff does not really working fine
-    // We need to provide the multi-touch zoomming too.
+    // It sometimes hard to getting used to the circular gesture stuff.
+    // We provide the multi-touch zooming too.
 
     private int mCachedLastTouchPointNum = 0;
 
@@ -419,7 +425,25 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
                 // Malacria, S., Lecolinet, E., and Guiard, Y. (2010, April).
                 // "Clutch-free panning and integrated pan-zoom control on touch-sensitive surfaces: the cyclostar approach."
                 // In Proceedings of the SIGCHI Conference on Human Factors in Computing Systems (pp. 2615-2624).
-                CircularGestureState = DetectCircularGesture();
+                final int OriginallyDetectedCircularGestureState = DetectCircularGesture();
+                // This can be set to have different value..
+                CircularGestureState = OriginallyDetectedCircularGestureState;
+
+                // Even for non-circular gesture, we maintain the circular gesture a little period of time,
+                // if we previously detected circular gesture.
+                if(OriginallyDetectedCircularGestureState != CIRCULAR_GESTURE_NONE)
+                {
+                    mLastCircularGestureDetectTime = System.currentTimeMillis();
+                }
+                else //if(OriginallyDetectedCircularGestureState == CIRCULAR_GESTURE_NONE)
+                {
+                    if(mCachedLastCircularGestureState != CIRCULAR_GESTURE_NONE) {
+                        if (Math.abs(mLastCircularGestureDetectTime - System.currentTimeMillis()) < mCircularGestureMaintainMinDuration)
+                        {
+                            CircularGestureState = mCachedLastCircularGestureState;
+                        }
+                    }
+                }
 
                 // No circular gesture for the multi-touch contact.
                 if(TouchPointNum >= 2)
