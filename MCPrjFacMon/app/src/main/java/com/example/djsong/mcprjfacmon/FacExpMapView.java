@@ -160,8 +160,9 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
     private int mCachedInternalBufferCenterCoordForZoomY = 0;
 
     /** The circular movement is determined when the total absolute movement is above some standard,
-     * while the ratio of the displacement to the abs movement is below some standard. (values below) */
-    private static final float mCircularGestureMinAbsMovement = 200.0f;
+     * while the ratio of the displacement to the abs movement is below some standard. (values below)
+     * In addition, the absolute movement is measured relatively to the screen resolution. */
+    private static final float mCircularGestureMinAbsMovementToResY = 0.25f;
     private static final float mCircularGestureMaxDisplacementRatioToMovement = 0.15f;
     /**
      * In addition, both x and y movement are needed for the circular gesture.
@@ -578,7 +579,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
             //Log.d("MapView", "ABS " + TotalAbsMovement + " DispRatio " + TotalDisplacement / TotalAbsMovement + " Ratio " + XtoYorYtoXRatio);
 
             // The condition for the circular gesture.
-            if( TotalAbsMovement >= mCircularGestureMinAbsMovement &&
+            if( TotalAbsMovement / (float)mCachedScreenSizeY >= mCircularGestureMinAbsMovementToResY &&
                 // This means the movement almost came back to its original starting point
                 TotalDisplacement / TotalAbsMovement <= mCircularGestureMaxDisplacementRatioToMovement &&
                 // Not like one dimensional movement.
