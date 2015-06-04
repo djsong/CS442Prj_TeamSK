@@ -55,7 +55,8 @@ public class SensorMgrMain
 					// ITEM number starts from 0
 					// INUSE 1 for occupied, 0 for empty
 					
-					String SendString = "FLOOR=1 ROOM=105 ITEM=1 INUSE=1";
+					//String SendString = "FLOOR=1 ROOM=105 ITEM=1 INUSE=1";
+					String SendString = "1 105 1 1";
 					
 					
 					////////////////////////////////////////////////////////////////////////////////

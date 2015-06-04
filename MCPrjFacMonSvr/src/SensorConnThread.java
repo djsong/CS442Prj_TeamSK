@@ -121,7 +121,40 @@ class SensorCommThread extends Thread
 		
 		// Use StringTokenizer for parsing, with default token " ".
 		StringTokenizer RecvStringTokenizer = new StringTokenizer(InRecvString); 
+		
+		// The original plan of like "FLOOR=# ROOM=# ITEM=# INUSE=#",
+		// but we have a little problem on the sensor manager side, so sending packet in a format like "# # # #"
+		// We now just care about the order of the separate numbers.
+		int TI = 0;
 		while(RecvStringTokenizer.hasMoreTokens())
+		{
+			if(TI == 0)
+			{
+				ParsedFloorNum = Integer.parseInt(RecvStringTokenizer.nextToken());				
+			}
+			else if(TI == 1)
+			{
+				ParsedRoomNum = Integer.parseInt(RecvStringTokenizer.nextToken());
+			}
+			else if(TI == 2)
+			{
+				ParsedItemNum = Integer.parseInt(RecvStringTokenizer.nextToken());
+			}
+			else if(TI == 3)
+			{
+				String ParamValue = RecvStringTokenizer.nextToken();
+				
+				// We consider just 1 as true, and any other numbers as false.
+				// We might have 2 for the false..
+				ParsedUsageState = 
+						(ParamValue.compareTo("1") == 0 || ParamValue.toUpperCase().compareTo("TRUE") == 0 || ParamValue.toUpperCase().compareTo("ON") == 0) ?
+								true : false;
+			}
+			++TI;
+		}
+		
+		// The old code that parsing the packet in a format like "FLOOR=# ROOM=# ITEM=# INUSE=#",
+		/*while(RecvStringTokenizer.hasMoreTokens())
 		{
 			// Further divide a single divided parameter string using the StringTokenizer again, this time with "="
 			StringTokenizer SingleParamTokenizer = new StringTokenizer(RecvStringTokenizer.nextToken(), "=");
@@ -152,8 +185,8 @@ class SensorCommThread extends Thread
 									true : false;
 				}
 			}
-		}
-
+		}*/
+		
 		// When you get the data from the sensor, set the data by calling DataManager.SetSingleRestroomItemOccupied();
 		if( 
 				DataManager.SetSingleRestroomItemOccupied(ParsedFloorNum, ParsedRoomNum, ParsedItemNum, ParsedUsageState) == true 
