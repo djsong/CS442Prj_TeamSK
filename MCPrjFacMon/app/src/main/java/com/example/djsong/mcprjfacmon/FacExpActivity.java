@@ -202,7 +202,7 @@ class ServerCommThread extends Thread
     FacExpMapView mFacMapView;
 
     /** in millisec */
-    final static long mRequestUsageDataPeriod = 2000;
+    final static long mRequestUsageDataPeriod = 500;
     long mLastUsageDataRequestTime = 0;
 
     /**
