@@ -210,7 +210,6 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
      * */
     private static final float mMultiTouchZoomingSensitivity = 1.0f;
 
-
     // We might better to have multi-touch zooming state variable..
 
     //////////////////////////////////////////////////////////////////////
@@ -378,11 +377,13 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
         float X = event.getX();
         float Y = event.getY();
 
+/* Tried multi-touch zooming
         float X2 = (TouchPointNum >= 2) ? event.getX(1) : 0.0f;
         float Y2 = (TouchPointNum >= 2) ? event.getY(1) : 0.0f;
 
         float DistanceBetweenTwoTouchPoints = (TouchPointNum >= 2) ?
                 FloatMath.sqrt( (X - X2) * (X - X2) + (Y - Y2) * (Y - Y2) ) : 0.0f;
+*/
 
         // When this is true, no circular gesture.
         boolean bDoMultiTouchZooming = false;
@@ -399,6 +400,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
                 break;
             case MotionEvent.ACTION_DOWN:
 
+/* Tried multi-touch zooming
                 if(mCachedLastTouchPointNum < 2 && TouchPointNum >= 2)
                 {
                     // Start the multi-touch zooming by save the initial distance between the two points.
@@ -413,6 +415,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
                     mCachedInternalBufferCenterCoordForZoomX = CachedCenterCoord.x;
                     mCachedInternalBufferCenterCoordForZoomY = CachedCenterCoord.y;
                 }
+*/
 
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -445,12 +448,14 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
                     }
                 }
 
+/* Tried multi-touch zooming
                 // No circular gesture for the multi-touch contact.
                 if(TouchPointNum >= 2)
                 {
                     CircularGestureState = CIRCULAR_GESTURE_NONE;
                     bDoMultiTouchZooming = true;
                 }
+*/
 
                 // Cache the wanted center coordinate of the internal buffer if circular gesture is started or changed direction.
                 if(CircularGestureState != CIRCULAR_GESTURE_NONE && CircularGestureState != mCachedLastCircularGestureState)
@@ -464,6 +469,7 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
                 break;
         }
 
+/* Tried multi-touch zooming
         if(bDoMultiTouchZooming)
         {
             // Handle multi-touch contact zooming for continuous multi-touching drag..
@@ -480,7 +486,8 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
             mPresentCoordY = PresentCoordForZoom.y;
 
         }
-        else if(CircularGestureState != CIRCULAR_GESTURE_NONE)
+        else */
+        if(CircularGestureState != CIRCULAR_GESTURE_NONE)
         {
             // Do the zooming action for circular gesture.
             if(CircularGestureState == CIRCULAR_GESTURE_CLOCKWISE)
@@ -519,8 +526,10 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
 
         mLastTouchX = X;
         mLastTouchY = Y;
+/* Tried multi-touch zooming
         mLastTouchX2 = X2;
         mLastTouchY2 = Y2;
+*/
 
         mCachedLastCircularGestureState = CircularGestureState;
 

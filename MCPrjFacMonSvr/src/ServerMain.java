@@ -53,7 +53,13 @@ public class ServerMain
 		DataManager.AddARestroom(false, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_FEMALE_RESTROOM_ROOMNUM, 3, 110, 1280, 310, 1500);
 		
 		// For second floor
-		DataManager.AddARestroom(true, 2, 211, 3, 640, 450, 840, 660);
+		DataManager.AddARestroom(true, 2, 211, 4, 640, 450, 840, 720);
 		DataManager.AddARestroom(false, 2, 212, 3, 1200, 450, 1400, 660);
+		
+		// Some initial state test..
+		//DataManager.SetSingleRestroomItemOccupied(2, 211, 0, true);
+		//DataManager.SetSingleRestroomItemOccupied(2, 211, 1, true);
+		//DataManager.SetSingleRestroomItemOccupied(2, 211, 2, true);
+		//DataManager.SetSingleRestroomItemOccupied(2, 211, 3, false);
 	}
 }
