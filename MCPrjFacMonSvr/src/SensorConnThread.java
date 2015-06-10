@@ -189,10 +189,10 @@ class SensorCommThread extends Thread
 		
 		// When you get the data from the sensor, set the data by calling DataManager.SetSingleRestroomItemOccupied();
 		if( 
-				DataManager.SetSingleRestroomItemOccupied(ParsedFloorNum, ParsedRoomNum, ParsedItemNum, ParsedUsageState) == true 
+				//DataManager.SetSingleRestroomItemOccupied(ParsedFloorNum, ParsedRoomNum, ParsedItemNum, ParsedUsageState) == true 
 				
 				// Internal ItemNum starts from 0, but we let the exposed ItemNum starts from 1.
-				//DataManager.SetSingleRestroomItemOccupied(ParsedFloorNum, ParsedRoomNum, Math.max(ParsedItemNum - 1, 0), ParsedUsageState) == true
+				DataManager.SetSingleRestroomItemOccupied(ParsedFloorNum, ParsedRoomNum, Math.max(ParsedItemNum - 1, 0), ParsedUsageState) == true
 				)
 		{
 			System.out.println("Restroom " + ParsedFloorNum + " " +  ParsedRoomNum + " " + ParsedItemNum + " usage state changed to " + ParsedUsageState);		

@@ -49,7 +49,7 @@ public class ServerMain
 		// When you set the relative area information, consider the owner building's bound.
 		
 		// Restroom layout for the 1st floor of N1. Not really same though.. 
-		DataManager.AddARestroom(true, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_MALE_RESTROOM_ROOMNUM, 2, 1170, 1280, 1370, 1500);
+		DataManager.AddARestroom(true, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_MALE_RESTROOM_ROOMNUM, 3, 1170, 1280, 1370, 1500);
 		DataManager.AddARestroom(false, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_FEMALE_RESTROOM_ROOMNUM, 3, 110, 1280, 310, 1500);
 		
 		// For second floor
