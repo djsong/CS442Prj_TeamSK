@@ -80,6 +80,8 @@ public class FacExpActivity extends ActionBarActivity {
                 startActivityForResult(IntentForFacSearchAct, REQUEST_CODE_FACSEARCHACT);
             }
         } );
+        // Disable for now. It does not work well..
+        mSearchBtn.setEnabled(false);
 
         mNextFloorBtn = (Button)findViewById(R.id.next_floor_btn);
         mNextFloorBtn.setOnClickListener( new View.OnClickListener() {

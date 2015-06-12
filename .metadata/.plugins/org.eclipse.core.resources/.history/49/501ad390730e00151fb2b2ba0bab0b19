@@ -1,0 +1,64 @@
+/**
+ * [CS442] Mobile Computing, Spring 2015
+ *
+ * Server main entry point, etc..
+ *
+ * @author: DJ Song
+ * */
+
+public class ServerMain 
+{
+	
+	/** Just as an example.. */
+	public final static int EXAMPLE_RESTROOM_FLOORNUM = 1;
+	public final static int EXAMPLE_MALE_RESTROOM_ROOMNUM = 105;
+	public final static int EXAMPLE_FEMALE_RESTROOM_ROOMNUM = 108;
+	
+	public static void main(String[] args) 
+	{
+
+		try {
+			
+			// Load server data before any communication thread gets on. 
+			LoadFacilityData();
+			
+			// Open the communication channels for the sensor and clients. 
+			
+			SensorConnThread SensorConnThreadObj = new SensorConnThread();
+			SensorConnThreadObj.start();
+			
+			ClientConnThread ClientConnThreadObj = new ClientConnThread();
+			ClientConnThreadObj.start();
+			
+			// Looks like the process won't be terminated until created threads are done..?
+			
+		} catch (Exception e) {
+			System.err.println("Exception occurred in main");
+		}
+
+	}
+	
+	/** 
+	 * This is suppose to load up all the facility information that the sensor is installed
+	 * We just load up some dummy for this semester though.
+	 * */
+	static void LoadFacilityData()
+	{
+		// Sample data
+		// DataManager can be accessed globally.
+		// When you set the relative area information, consider the owner building's bound.
+		
+		// Restroom layout for the 1st floor of N1. Not really same though.. 
+		DataManager.AddARestroom(true, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_MALE_RESTROOM_ROOMNUM, 2, 1170, 1280, 1370, 1500);
+		DataManager.AddARestroom(false, EXAMPLE_RESTROOM_FLOORNUM, EXAMPLE_FEMALE_RESTROOM_ROOMNUM, 3, 110, 1280, 310, 1500);
+		
+		// For second floor
+		DataManager.AddARestroom(true, 2, 211, 4, 640, 450, 840, 720);
+		DataManager.AddARestroom(false, 2, 212, 3, 1200, 450, 1400, 660);
+		
+		DataManager.SetSingleRestroomItemOccupied(2, 211, 0, false);
+		DataManager.SetSingleRestroomItemOccupied(2, 211, 1, false);
+		DataManager.SetSingleRestroomItemOccupied(2, 211, 2, false);
+		DataManager.SetSingleRestroomItemOccupied(2, 211, 3, false);
+	}
+}

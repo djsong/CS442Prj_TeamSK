@@ -238,10 +238,12 @@ public class FacExpMapView extends SurfaceView implements SurfaceHolder.Callback
         // Most facility creation data are come from the server though..
 
         // We got an image for the 1st floor of N1 building. kk
-        Bitmap FloorImage_01 = BitmapFactory.decodeResource(getResources(), R.drawable.n1_floor_01_1024x1024);
+        //Bitmap FloorImage_01 = BitmapFactory.decodeResource(getResources(), R.drawable.n1_floor_01_1024x1024);
+        Bitmap FloorImage_01 = BitmapFactory.decodeResource(getResources(), R.drawable.n1_floor_01_512x512);
         mAllFloorImage.put( new Integer(1), FloorImage_01 );
 
-        Bitmap FloorImage_02 = BitmapFactory.decodeResource(getResources(), R.drawable.sample_building_floor_02_1024x1024);
+        //Bitmap FloorImage_02 = BitmapFactory.decodeResource(getResources(), R.drawable.sample_building_floor_02_1024x1024);
+        Bitmap FloorImage_02 = BitmapFactory.decodeResource(getResources(), R.drawable.sample_building_floor_02_512x512);
         mAllFloorImage.put( new Integer(2), FloorImage_02 );
 
         // They should from the server too, but anyway kk

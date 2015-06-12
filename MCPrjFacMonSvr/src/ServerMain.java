@@ -56,6 +56,14 @@ public class ServerMain
 		DataManager.AddARestroom(true, 2, 211, 4, 640, 450, 840, 720);
 		DataManager.AddARestroom(false, 2, 212, 3, 1200, 450, 1400, 660);
 		
+		// Belows are for some test..
+		//DataManager.AddARestroom(true, 2, 211, 3, 814, 450, 1014, 660);
+		//DataManager.AddARestroom(false, 2, 212, 3, 1034, 450, 1234, 660);
+		
+		//DataManager.SetSingleRestroomItemOccupied(2, 211, 0, true);
+		//DataManager.SetSingleRestroomItemOccupied(2, 212, 1, true);
+		//DataManager.SetSingleRestroomItemOccupied(2, 212, 2, true);
+		
 		// Some initial state test..
 		//DataManager.SetSingleRestroomItemOccupied(2, 211, 0, true);
 		//DataManager.SetSingleRestroomItemOccupied(2, 211, 1, true);
